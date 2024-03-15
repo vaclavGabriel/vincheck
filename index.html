@@ -59,8 +59,9 @@
 <script>
     function getVehicleInfo() {
         const vin = document.getElementById('vinInput').value;
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Veřejný proxy server
-        const url = `${proxyUrl}https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`;
+        // const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Veřejný proxy server
+        // const url = `${proxyUrl}https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`;
+        const url = 'https://corsproxy.io/?' + encodeURIComponent(`https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`);
         
         fetch(url)
             .then(response => response.json())
