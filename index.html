@@ -27,7 +27,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Domů</a>
+                    <a class="nav-link active" aria-current="page" href="/">Domů</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">O nás</a>
@@ -43,12 +43,12 @@
 <div class="container">
     <h1 class="mt-5">VIN Info</h1>
     <div class="row mt-3">
-        <div class="col-md-6" style="align-self: self-end;">
+        <div class="col-md-6">
             <label for="vinInput" class="form-label">Zadejte VIN kód:</label>
             <input type="text" class="form-control" id="vinInput" placeholder="Např. WF0FXXWPCFHD05923">
         </div>
-        <div class="col-md-6">
-            <button class="btn btn-primary mt-4" onclick="getVehicleInfo()" id="getInfoBtn" disabled data-bs-toggle="tooltip" data-bs-placement="top" title="Zadejte VIN kód o minimálně 16 znacích">Získat informace</button>
+        <div class="col-md-6" style="align-self: self-end;">
+            <button class="btn btn-primary mt-4" onclick="getVehicleInfo()" id="getInfoBtn" disabled>Získat informace</button>
         </div>
     </div>
     <div id="vehicleInfo" class="mt-4"></div>
@@ -58,9 +58,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Aktivace tooltipu
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl);
+    var btnTooltip = new bootstrap.Tooltip(document.getElementById('getInfoBtn'), {
+        placement: 'top',
+        title: 'Zadejte VIN kód o 17 znacích',
+        trigger: 'manual'
     });
 
     // Funkce pro získání informací o vozidle
@@ -87,10 +88,27 @@
             });
     }
 
-    // Kontrola délky pole #vinInput před provedením akce
-    document.getElementById('vinInput').addEventListener('input', function() {
-        const btn = document.getElementById('getInfoBtn');
-        btn.disabled = this.value.trim().length < 16; // Disablování tlačítka, pokud je délka pole menší než 16
+    const vinInput = document.getElementById('vinInput');
+    const getInfoBtn = document.getElementById('getInfoBtn');
+
+    vinInput.addEventListener('input', function() {
+        getInfoBtn.disabled = this.value.trim().length != 17;
+    });
+
+    getInfoBtn.addEventListener('mouseover', function() {
+        if (getInfoBtn.disabled) {
+            btnTooltip.show();
+        }
+    });
+
+    vinInput.addEventListener('blur', function() {
+        if (getInfoBtn.disabled) {
+            btnTooltip.show();
+        }
+    });
+
+    getInfoBtn.addEventListener('mouseout', function() {
+        btnTooltip.hide();
     });
 </script>
 </body>
