@@ -43,24 +43,29 @@
 <div class="container">
     <h1 class="mt-5">VIN Info</h1>
     <div class="row mt-3">
-        <div class="col-md-6">
+        <div class="col-md-6" style="align-self: self-end;">
             <label for="vinInput" class="form-label">Zadejte VIN kód:</label>
             <input type="text" class="form-control" id="vinInput" placeholder="Např. WF0FXXWPCFHD05923">
         </div>
         <div class="col-md-6">
-            <button class="btn btn-primary mt-4" onclick="getVehicleInfo()">Získat informace</button>
+            <button class="btn btn-primary mt-4" onclick="getVehicleInfo()" id="getInfoBtn" disabled data-bs-toggle="tooltip" data-bs-placement="top" title="Zadejte VIN kód o minimálně 16 znacích">Získat informace</button>
         </div>
     </div>
     <div id="vehicleInfo" class="mt-4"></div>
 </div>
 
-<!-- Připojení Bootstrap JS pro interaktivní komponenty -->
+<!-- Připojení Bootstrap JS pro interaktivní komponenty a tooltip -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Aktivace tooltipu
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Funkce pro získání informací o vozidle
     function getVehicleInfo() {
         const vin = document.getElementById('vinInput').value;
-        // const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Veřejný proxy server
-        // const url = `${proxyUrl}https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`;
         const url = 'https://corsproxy.io/?' + encodeURIComponent(`https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`);
         
         fetch(url)
@@ -81,6 +86,12 @@
                 document.getElementById('vehicleInfo').innerHTML = '<p class="text-danger">Chyba při načítání dat. Zkontrolujte VIN kód a zkuste to znovu.</p>';
             });
     }
+
+    // Kontrola délky pole #vinInput před provedením akce
+    document.getElementById('vinInput').addEventListener('input', function() {
+        const btn = document.getElementById('getInfoBtn');
+        btn.disabled = this.value.trim().length < 16; // Disablování tlačítka, pokud je délka pole menší než 16
+    });
 </script>
 </body>
 </html>
