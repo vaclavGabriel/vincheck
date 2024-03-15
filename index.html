@@ -1,115 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIN Info</title>
-<!-- Připojení Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    /* Vlastní styly */
-    body {
-        padding-top: 60px; /* Posunutí obsahu kvůli fixed navbar */
-    }
-    .container {
-        margin-top: 50px;
-    }
-</style>
-</head>
-<body>
-<!-- Navigační menu pomocí Bootstrap navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">VIN Info</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIN Info.cz</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-dark fixed-top"
+      style="background-color: #c6dbad"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand text-muted" href="/">VIN Info.cz</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Domů</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">O nás</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Kontakt</a>
-                </li>
-            </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active text-dark" aria-current="page" href="/"
+                >Domů</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-muted" href="#">Povinné ručení</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-muted" href="#">Havarijní pojištění</a>
+            </li>
+          </ul>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div class="container">
-    <h1 class="mt-5">VIN Info</h1>
-    <div class="row mt-3">
+    <div class="container">
+      <h1 class="mt-5">Kontrola VIN kódu</h1>
+      <div class="row mt-3">
         <div class="col-md-6">
-            <label for="vinInput" class="form-label">Zadejte VIN kód:</label>
-            <input type="text" class="form-control" id="vinInput" placeholder="Např. WF0FXXWPCFHD05923">
+          <label for="vinInput" class="form-label">Zadejte VIN kód:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="vinInput"
+            placeholder="Např. WF0FXXWPCFHD05923"
+          />
         </div>
-        <div class="col-md-6" style="align-self: self-end;">
-            <button class="btn btn-primary mt-4" onclick="getVehicleInfo()" id="getInfoBtn" disabled>Získat informace</button>
+        <div class="col-md-6" style="align-self: self-end">
+          <button
+            class="btn btn-primary mt-4"
+            onclick="getVehicleInfo()"
+            id="getInfoBtn"
+            disabled
+          >
+            Získat informace
+          </button>
         </div>
+      </div>
+      <div id="vehicleInfo" class="mt-4"></div>
     </div>
-    <div id="vehicleInfo" class="mt-4"></div>
-</div>
 
-<!-- Připojení Bootstrap JS pro interaktivní komponenty a tooltip -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Aktivace tooltipu
-    var btnTooltip = new bootstrap.Tooltip(document.getElementById('getInfoBtn'), {
-        placement: 'top',
-        title: 'Zadejte VIN kód o 17 znacích',
-        trigger: 'manual'
-    });
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Aktivace tooltipu
+      var btnTooltip = new bootstrap.Tooltip(
+        document.getElementById("getInfoBtn"),
+        {
+          placement: "top",
+          title: "Zadejte VIN kód o 17 znacích",
+          trigger: "manual",
+        }
+      );
 
-    // Funkce pro získání informací o vozidle
-    function getVehicleInfo() {
-        const vin = document.getElementById('vinInput').value;
-        const url = 'https://corsproxy.io/?' + encodeURIComponent(`https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`);
-        
+      function getVehicleInfo() {
+        const vin = document.getElementById("vinInput").value;
+        const url =
+          "https://corsproxy.io/?" +
+          encodeURIComponent(
+            `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`
+          );
+
         fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                // Vytvoření tabulky s daty
-                let tableHtml = '<table class="table">';
-                data.forEach(item => {
-                    tableHtml += `<tr><th>${item.label}</th><td>${item.value}</td></tr>`;
-                });
-                tableHtml += '</table>';
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
 
-                // Vložení tabulky do elementu vehicleInfo
-                document.getElementById('vehicleInfo').innerHTML = tableHtml;
-            })
-            .catch(error => {
-                console.error('Chyba při načítání dat:', error);
-                document.getElementById('vehicleInfo').innerHTML = '<p class="text-danger">Chyba při načítání dat. Zkontrolujte VIN kód a zkuste to znovu.</p>';
+            // Vytvoření divu pro zobrazení informací
+            let infoDiv = document.createElement("div");
+            infoDiv.classList.add("row", "mt-5", "mb-5", "align-items-center");
+
+            // Sloupec pro logo značky
+            const brandLogoSrc = getLogoSrc(
+              data.find((item) => item.name === "TovarniZnacka")?.value
+            ); // Získání cesty k obrázku loga
+            const brandLogoCol = document.createElement("div");
+            brandLogoCol.classList.add("col-md-3", "text-center");
+            const brandLogo = document.createElement("img");
+            brandLogo.src = brandLogoSrc;
+            brandLogo.alt = "Brand Logo";
+            brandLogo.style.maxWidth = "200px";
+            brandLogo.style.paddingRight = "20px";
+            brandLogo.classList.add("img-fluid");
+            brandLogoCol.appendChild(brandLogo);
+            infoDiv.appendChild(brandLogoCol);
+
+            // Sloupec pro informace o vozidle
+            const vehicleInfoCol = document.createElement("div");
+            vehicleInfoCol.classList.add("col-md-4");
+            const vehicleInfo = document.createElement("div");
+            vehicleInfo.classList.add("vehicle-info"); // Přidání třídy pro flexbox styly
+            const brand =
+              data.find((item) => item.name === "TovarniZnacka")?.value ||
+              "Neznámá značka";
+            const model =
+              data.find((item) => item.name === "Typ")?.value ||
+              "Neznámý model";
+            const firstRegistration =
+              data.find((item) => item.name === "DatumPrvniRegistrace")
+                ?.value || "Neznámé datum";
+            const vinCode =
+              data.find((item) => item.name === "VIN")?.value || "Neznámý VIN";
+            vehicleInfo.innerHTML = `
+                      <div><strong>Značka:</strong> ${brand}</div>
+                      <div><strong>Model:</strong> ${model}</div>
+                      <div><strong>Datum první registrace:</strong> ${firstRegistration}</div>
+                      <div><strong>VIN:</strong> ${vinCode}</div>
+                  `;
+            vehicleInfoCol.appendChild(vehicleInfo);
+            infoDiv.appendChild(vehicleInfoCol);
+
+            // Sloupec pro datum pravidelné technické prohlídky
+            const techInspectionCol = document.createElement("div");
+            techInspectionCol.classList.add("col-md-4");
+            const techInspection =
+              data.find(
+                (item) => item.name === "PravidelnaTechnickaProhlidkaDo"
+              )?.value || "Neznámé datum";
+            const techInspectionDiv = document.createElement("div");
+
+            const currentDate = new Date()
+              .toLocaleDateString("cs-CZ", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })
+              .replace(/ /g, "");
+
+            techInspectionDiv.innerHTML =
+              techInspection > currentDate
+                ? `<strong>Pravidelná technická prohlídka do:</strong> <span style="color: green">${techInspection}</span>`
+                : `<strong>Pravidelná technická prohlídka do:</strong> <span style="color: red">${techInspection}</p>`;
+            techInspectionCol.appendChild(techInspectionDiv);
+            infoDiv.appendChild(techInspectionCol);
+
+            // Vložení informací nad tabulku
+            const vehicleInfoContainer = document.getElementById("vehicleInfo");
+            vehicleInfoContainer.innerHTML = "";
+            vehicleInfoContainer.appendChild(infoDiv);
+
+            // Vytvoření tabulky s daty
+            let tableHtml = '<table class="table mt-4">';
+            data.forEach((item) => {
+              if (
+                item.name !== "TovarniZnacka" &&
+                item.name !== "Typ" &&
+                item.name !== "DatumPrvniRegistrace" &&
+                item.name !== "VIN" &&
+                item.name !== "PravidelnaTechnickaProhlidkaDo" &&
+                item.value !== ""
+              ) {
+                tableHtml += `<tr><th>${item.label}</th><td>${item.value}</td></tr>`;
+              }
             });
-    }
+            tableHtml += "</table>";
 
-    const vinInput = document.getElementById('vinInput');
-    const getInfoBtn = document.getElementById('getInfoBtn');
+            // Vložení tabulky pod informace o vozidle
+            vehicleInfoContainer.innerHTML += tableHtml;
+          })
+          .catch((error) => {
+            console.error("Chyba při načítání dat:", error);
+            document.getElementById("vehicleInfo").innerHTML =
+              '<p class="text-danger">Chyba při načítání dat. VIN pravděpodobně neexistuje v Registru silničních vozidel.<br>Zkontrolujte VIN kód a zkuste to znovu.</p>';
+          });
+      }
 
-    vinInput.addEventListener('input', function() {
+      function getLogoSrc(brand) {
+        const brandLogos = {
+          "ALFA-ROMEO": "logos/alfa-romeo.svg",
+          AUDI: "logos/audi.svg",
+          BMW: "logos/bmw.svg",
+          CHEVROLET: "logos/chevrolet.svg",
+          CITROEN: "logos/citroen.svg",
+          CUPRA: "logos/cupra.svg",
+          DACIA: "logos/dacia.svg",
+          FERRARI: "logos/ferrari.svg",
+          FIAT: "logos/fiat.svg",
+          FORD: "logos/ford.svg",
+          HONDA: "logos/honda.svg",
+          HYUNDAI: "logos/hyundai.svg",
+          KIA: "logos/kia.svg",
+          LANCIA: "logos/lancia.svg",
+          "LAND-ROVER": "logos/land-rover.svg",
+          MAZDA: "logos/mazda.svg",
+          //"MERCEDES-BENZ": "logos/mercedes-benz.svg",
+          MITSUBISHI: "logos/mitsubishi.svg",
+          OPEN: "logos/opel.svg",
+          PEUGEOT: "logos/peugeot.svg",
+          PORSCHE: "logos/porsche.svg",
+          RENAULT: "logos/renault.svg",
+          SAAB: "logos/saab.svg",
+          SEAT: "logos/seat.svg",
+          SKODA: "logos/skoda.svg",
+          ŠKODA: "logos/skoda.svg",
+          TOYOTA: "logos/toyota.svg",
+          VOLKSWAGEN: "logos/volkswagen.svg",
+          VOLVO: "logos/volvo.svg",
+        };
+
+        return brandLogos[brand] || "logos/default_logo.svg";
+      }
+
+      const vinInput = document.getElementById("vinInput");
+      const getInfoBtn = document.getElementById("getInfoBtn");
+
+      vinInput.addEventListener("input", function () {
         getInfoBtn.disabled = this.value.trim().length != 17;
-    });
+      });
 
-    getInfoBtn.addEventListener('mouseover', function() {
+      getInfoBtn.addEventListener("mouseover", function () {
         if (getInfoBtn.disabled) {
-            btnTooltip.show();
+          btnTooltip.show();
         }
-    });
+      });
 
-    vinInput.addEventListener('blur', function() {
+      vinInput.addEventListener("blur", function () {
         if (getInfoBtn.disabled) {
-            btnTooltip.show();
+          btnTooltip.show();
         }
-    });
+      });
 
-    getInfoBtn.addEventListener('mouseout', function() {
+      vinInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("getInfoBtn").click();
+        }
+      });
+
+      getInfoBtn.addEventListener("mouseout", function () {
         btnTooltip.hide();
-    });
-</script>
-</body>
+      });
+    </script>
+  </body>
 </html>
