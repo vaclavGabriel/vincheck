@@ -1,6 +1,15 @@
 body {
-    padding-top: 60px;
+  font-family: "Montserrat";
+  padding-top: 60px;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+@media (width > 991px) {
+  .navbar {
+    padding-right: 40px;
+    padding-left: 40px;
   }
-  .container {
-    margin-top: 50px;
-  }
+}
