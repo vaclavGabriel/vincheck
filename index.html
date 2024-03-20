@@ -42,7 +42,7 @@
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a class="nav-link active text-dark" aria-current="page" href="/"
-                >Domů</a
+                >Kontrola VIN/TP/ORV</a
               >
             </li>
             <li class="nav-item">
@@ -67,14 +67,15 @@
     </nav>
 
     <div class="container mt-5">
-      <h2>Kontrola VIN kódu</h2>
+      <h2>Kontrola vozidla v registru</h2>
       <p>
         Při koupi ojetého vozidla je důležité prověřit jeho historii a technický
         stav. S naším nástrojem můžete zdarma zkontrolovat klíčové informace
-        spojené s daným vozidlem. Stačí zadat VIN kód níže a získáte přístup k
-        důležitým údajům.
+        spojené s daným vozidlem v české registru vozidel. Stačí zadat VIN kód
+        nebo číslo TP/ORV a získáte přístup k důležitým údajům.
       </p>
-      <div class="row mt-3">
+
+      <div class="row mt-5" id="searchSection">
         <div class="col-md-6">
           <label for="vinInput" class="form-label">Zadejte VIN kód:</label>
           <input
@@ -93,9 +94,44 @@
             id="getInfoBtn"
             disabled
           >
-            Získat informace
+            Vyhledat vozidlo dle VIN
           </button>
         </div>
+
+        <div class="col-md-6 mt-5">
+          <label for="vinInput" class="form-label">Zadejte číslo TP:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="tpInput"
+            placeholder="Např. UI036202"
+          />
+        </div>
+        <div
+          class="col-md-6 d-flex align-items-end justify-content-md-end mt-md-0 mt-3"
+        >
+          <button
+            class="btn btn-primary w-100"
+            onclick="getVehicleInfo()"
+            id="getTpInfoBtn"
+            disabled
+          >
+            Vyhledat vozidlo dle TP
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="newSearch"
+        class="mt-4"
+        style="display: none; justify-content: center"
+      >
+        <button
+          class="btn btn-primary w-75"
+          onclick="hideVehicleInfoContainer()"
+        >
+          Vyhledat jiné vozidlo
+        </button>
       </div>
       <div id="vehicleInfo" class="mt-4"></div>
     </div>
@@ -113,10 +149,13 @@
 
       function getVehicleInfo() {
         const vin = document.getElementById("vinInput").value;
+        const tp = document.getElementById("tpInput").value;
         const url =
           "https://corsproxy.io/?" +
           encodeURIComponent(
-            `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`
+            vin
+              ? `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`
+              : `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?tp=${tp}`
           );
 
         fetch(url)
@@ -158,12 +197,12 @@
             const vinCode =
               data.find((item) => item.name === "VIN")?.value || "Neznámý VIN";
             vehicleInfo.innerHTML = `
-                      <div><strong>Značka:</strong> ${brand}</div>
-                      <div><strong>Model:</strong> ${model}</div>
-                      <div><strong>Obchodní označení:</strong> ${obchodniOznaceni}</div>
-                      <div><strong>Datum první registrace:</strong> ${firstRegistration}</div>
-                      <div><strong>VIN:</strong> ${vinCode}</div>
-                  `;
+                            <div><strong>Značka:</strong> ${brand}</div>
+                            <div><strong>Model:</strong> ${model}</div>
+                            <div><strong>Obchodní označení:</strong> ${obchodniOznaceni}</div>
+                            <div><strong>Datum první registrace:</strong> ${firstRegistration}</div>
+                            <div><strong>VIN:</strong> ${vinCode}</div>
+                        `;
             vehicleInfoCol.appendChild(vehicleInfo);
             infoDiv.appendChild(vehicleInfoCol);
 
@@ -192,10 +231,10 @@
             techInspectionCol.appendChild(techInspectionDiv);
 
             povButtonDiv.innerHTML = `<a href="https://online.pojisteni.cz/vozidla/srovnani?ap=AWYPy1" class="btn btn-outline-primary w-90 mt-1 mb-1" role="button">Sjednat povinné ručení</a>
-            <a href="https://online.pojisteni.cz/vozidla/srovnani?ap=AWYPy1" class="btn btn-outline-primary w-90 mt-1 mb-1" role="button">Sjednat havarijní pojištění</a>
-            <br>
-            <a href="https://cz.cebia.com/?vin=${vinCode}" class="btn btn-outline-primary w-100 mt-1 mb-1" role="button">Zobrazit historii vozu</a>
-          `;
+                  <a href="https://online.pojisteni.cz/vozidla/srovnani?ap=AWYPy1" class="btn btn-outline-primary w-90 mt-1 mb-1" role="button">Sjednat havarijní pojištění</a>
+                  <br>
+                  <a href="https://cz.cebia.com/?vin=${vinCode}" class="btn btn-outline-primary w-100 mt-1 mb-1" role="button">Zobrazit historii vozu</a>
+                `;
 
             techInspectionCol.appendChild(povButtonDiv);
 
@@ -204,6 +243,9 @@
             const vehicleInfoContainer = document.getElementById("vehicleInfo");
             vehicleInfoContainer.innerHTML = "";
             vehicleInfoContainer.appendChild(infoDiv);
+
+            searchSection.style.display = "none";
+            newSearch.style.display = "flex";
 
             let tableHtml = '<table class="table mt-4">';
             data.forEach((item) => {
@@ -271,6 +313,7 @@
           TOYOTA: "logos/toyota.svg",
           VOLKSWAGEN: "logos/volkswagen.svg",
           VOLVO: "logos/volvo.svg",
+          VW: "logos/volkswagen.svg",
         };
 
         return brandLogos[brand] || "logos/default_logo.svg";
@@ -278,9 +321,28 @@
 
       const vinInput = document.getElementById("vinInput");
       const getInfoBtn = document.getElementById("getInfoBtn");
+      const getTpInfoBtn = document.getElementById("getTpInfoBtn");
+
+      function hideVehicleInfoContainer() {
+        const element = document.getElementById("vehicleInfo");
+        element.innerHTML = "";
+        searchSection.style = null;
+        newSearch.style.display = "none";
+        const vinInput = document.getElementById("vinInput");
+        vinInput.value = null;
+        const tpInput = document.getElementById("tpInput");
+        tpInput.value = null;
+        getInfoBtn.disabled = true;
+        getTpInfoBtn.disabled = true;
+      }
 
       vinInput.addEventListener("input", () => {
         getInfoBtn.disabled = vinInput.value.trim().length != 17;
+      });
+
+      tpInput.addEventListener("input", () => {
+        getTpInfoBtn.disabled =
+          tpInput.value.trim().length < 6 || tpInput.value.trim().length > 10;
       });
 
       getInfoBtn.addEventListener("mouseover", () => {
@@ -300,6 +362,13 @@
           event.preventDefault();
           getInfoBtn.click();
           btnTooltip.hide();
+        }
+      });
+
+      tpInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          getTpInfoBtn.click();
         }
       });
 
