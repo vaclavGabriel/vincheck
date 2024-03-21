@@ -222,15 +222,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      var btnTooltip = new bootstrap.Tooltip(
-        document.getElementById("getInfoBtn"),
-        {
-          placement: "top",
-          title: "Zadejte VIN kód o 17 znacích",
-          trigger: "manual",
-        }
-      );
-
       function getVehicleInfo() {
         const vin = document
           .getElementById("vinInput")
@@ -448,23 +439,10 @@
           orvInput.value.trim().length < 5 || orvInput.value.trim().length > 9;
       });
 
-      getInfoBtn.addEventListener("mouseover", () => {
-        if (getInfoBtn.disabled) {
-          btnTooltip.show();
-        }
-      });
-
-      vinInput.addEventListener("blur", () => {
-        if (getInfoBtn.disabled) {
-          btnTooltip.show();
-        }
-      });
-
       vinInput.addEventListener("keypress", (event) => {
         if (event.key === "Enter") {
           event.preventDefault();
           getInfoBtn.click();
-          btnTooltip.hide();
         }
       });
 
@@ -481,10 +459,6 @@
           getOrvInfoBtn.click();
         }
       });
-
-      getInfoBtn.addEventListener("mouseout", () => {
-        btnTooltip.hide();
-      });
     </script>
 
     <footer class="footer mt-auto py-3 bg-light m">
@@ -494,9 +468,7 @@
         >
         <span class="text-muted" id="right"
           >Zdroj dat:
-          <a
-            href="https://www.dataovozidlech.cz/otevrenaData/vypisy"
-            target="_blank"
+          <a href="https://www.dataovozidlech.cz/" target="_blank"
             >Datová kostka</a
           ></span
         >
