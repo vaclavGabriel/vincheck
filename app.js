@@ -201,13 +201,20 @@ function getVehicleInfo() {
     return;
   }
 
+  // Add API key as query parameter (allorigins doesn't forward custom headers)
+  apiUrl += `&api_key=ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v`;
+
+  // Use allorigins proxy to bypass CORS
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
+    apiUrl
+  )}`;
+
   // Disable buttons during fetch
   getInfoBtn.disabled = true;
   getTpInfoBtn.disabled = true;
   getOrvInfoBtn.disabled = true;
 
-  fetch(apiUrl, {
-    headers: { api_key: "ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v" },
+  fetch(proxyUrl, {
     cache: "no-cache",
   })
     .then((response) => {
@@ -216,7 +223,20 @@ function getVehicleInfo() {
       }
       return response.json();
     })
-    .then((data) => {
+    .then((proxyData) => {
+      // allorigins returns { contents: "..." } where contents is a string
+      let data;
+      try {
+        data = JSON.parse(proxyData.contents);
+      } catch (parseError) {
+        throw new Error("Invalid response from API");
+      }
+
+      // Check if API returned an error
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid data format from API");
+      }
+
       const vinCode = getDataValue(data, "VIN", "Neznámý VIN");
       const vehicleInfoContainer = document.getElementById("vehicleInfo");
 
