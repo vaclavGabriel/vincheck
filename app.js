@@ -183,26 +183,30 @@ function getVehicleInfo() {
   const tp = tpInput.value.replace(/[^a-zA-Z0-9]/g, "");
   const orv = orvInput.value.replace(/[^a-zA-Z0-9]/g, "");
 
-  // Determine API URL
+  // Determine API URL - encode only the parameter values, not the entire URL
   let apiUrl;
   if (vin) {
-    apiUrl = `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?vin=${vin}`;
+    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?vin=${encodeURIComponent(
+      vin
+    )}`;
   } else if (tp) {
-    apiUrl = `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?tp=${tp}`;
+    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?tp=${encodeURIComponent(
+      tp
+    )}`;
   } else if (orv) {
-    apiUrl = `https://www.dataovozidlech.cz/api/Vozidlo/GetVehicleInfo?orv=${orv}`;
+    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?orv=${encodeURIComponent(
+      orv
+    )}`;
   } else {
     return;
   }
-
-  const url = encodeURIComponent(apiUrl);
 
   // Disable buttons during fetch
   getInfoBtn.disabled = true;
   getTpInfoBtn.disabled = true;
   getOrvInfoBtn.disabled = true;
 
-  fetch(url, {
+  fetch(apiUrl, {
     headers: { api_key: "ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v" },
     cache: "no-cache",
   })
@@ -240,11 +244,9 @@ function getVehicleInfo() {
       // Re-enable buttons
       getInfoBtn.disabled = vinInput.value.trim().length !== 17;
       getTpInfoBtn.disabled =
-        tpInput.value.trim().length < 6 ||
-        tpInput.value.trim().length > 10;
+        tpInput.value.trim().length < 6 || tpInput.value.trim().length > 10;
       getOrvInfoBtn.disabled =
-        orvInput.value.trim().length < 5 ||
-        orvInput.value.trim().length > 9;
+        orvInput.value.trim().length < 5 || orvInput.value.trim().length > 9;
     });
 }
 
@@ -325,4 +327,3 @@ if (document.readyState === "loading") {
 // Expose functions to global scope for onclick handlers
 window.getVehicleInfo = getVehicleInfo;
 window.hideVehicleInfoContainer = hideVehicleInfoContainer;
-
