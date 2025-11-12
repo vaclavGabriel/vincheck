@@ -1,0 +1,9 @@
+name = "vincheck-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Optional: Configure custom domain
+# routes = [
+#   { pattern = "api.vininfo.cz", zone_name = "vininfo.cz" }
+# ]
+

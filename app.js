@@ -3,6 +3,14 @@ let vinInput, tpInput, orvInput;
 let getInfoBtn, getTpInfoBtn, getOrvInfoBtn;
 let searchSection, newSearch, errorEl;
 
+// Serverless function endpoint - update this after deployment
+// For Vercel: https://your-project.vercel.app/api/vehicle
+// For Netlify: https://your-site.netlify.app/.netlify/functions/vehicle
+// For Cloudflare Worker: https://your-worker.your-subdomain.workers.dev
+// Leave empty string to use relative path (works with Vercel/Netlify if deployed together)
+const PROXY_API_URL =
+  "https://vincheck-aqwxuwh3t-vaclavs-projects-47bb9be1.vercel.app/api/vehicle";
+
 // Brand logo mapping - optimized lookup
 const brandLogos = {
   "ALFA-ROMEO": "logos/alfa-romeo.svg",
@@ -183,31 +191,17 @@ function getVehicleInfo() {
   const tp = tpInput.value.replace(/[^a-zA-Z0-9]/g, "");
   const orv = orvInput.value.replace(/[^a-zA-Z0-9]/g, "");
 
-  // Determine API URL - encode only the parameter values, not the entire URL
-  let apiUrl;
+  // Build proxy URL with query parameters
+  let proxyUrl = `${PROXY_API_URL}?`;
   if (vin) {
-    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?vin=${encodeURIComponent(
-      vin
-    )}`;
+    proxyUrl += `vin=${encodeURIComponent(vin)}`;
   } else if (tp) {
-    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?tp=${encodeURIComponent(
-      tp
-    )}`;
+    proxyUrl += `tp=${encodeURIComponent(tp)}`;
   } else if (orv) {
-    apiUrl = `https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2?orv=${encodeURIComponent(
-      orv
-    )}`;
+    proxyUrl += `orv=${encodeURIComponent(orv)}`;
   } else {
     return;
   }
-
-  // Add API key as query parameter (allorigins doesn't forward custom headers)
-  apiUrl += `&api_key=ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v`;
-
-  // Use allorigins proxy to bypass CORS
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
-    apiUrl
-  )}`;
 
   // Disable buttons during fetch
   getInfoBtn.disabled = true;
@@ -223,20 +217,7 @@ function getVehicleInfo() {
       }
       return response.json();
     })
-    .then((proxyData) => {
-      // allorigins returns { contents: "..." } where contents is a string
-      let data;
-      try {
-        data = JSON.parse(proxyData.contents);
-      } catch (parseError) {
-        throw new Error("Invalid response from API");
-      }
-
-      // Check if API returned an error
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid data format from API");
-      }
-
+    .then((data) => {
       const vinCode = getDataValue(data, "VIN", "Neznámý VIN");
       const vehicleInfoContainer = document.getElementById("vehicleInfo");
 
