@@ -6,11 +6,17 @@
 const API_KEY = 'ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v';
 const API_BASE_URL = 'https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2';
 
-export default async function handler(req, res) {
-  // Handle CORS
+// Helper function to set CORS headers
+function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://vininfo.cz');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+}
+
+export default async function handler(req, res) {
+  // Set CORS headers for all responses
+  setCorsHeaders(res);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {

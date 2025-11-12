@@ -3,32 +3,33 @@
  * Deploy to Netlify - this file will automatically be available at /.netlify/functions/vehicle
  */
 
-const API_KEY = 'ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v';
-const API_BASE_URL = 'https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2';
+const API_KEY = "ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v";
+const API_BASE_URL =
+  "https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2";
 
 exports.handler = async (event, context) => {
   // Handle CORS
   const headers = {
-    'Access-Control-Allow-Origin': 'https://vininfo.cz',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    "Access-Control-Allow-Origin": "https://vininfo.cz",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
   };
 
   // Handle preflight
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
       headers,
-      body: '',
+      body: "",
     };
   }
 
   // Only allow GET requests
-  if (event.httpMethod !== 'GET') {
+  if (event.httpMethod !== "GET") {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' }),
+      body: JSON.stringify({ error: "Method not allowed" }),
     };
   }
 
@@ -40,7 +41,9 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Missing required parameter: vin, tp, or orv' }),
+        body: JSON.stringify({
+          error: "Missing required parameter: vin, tp, or orv",
+        }),
       };
     }
 
@@ -57,7 +60,7 @@ exports.handler = async (event, context) => {
     // Make request to the API
     const response = await fetch(apiUrl, {
       headers: {
-        'api_key': API_KEY,
+        api_key: API_KEY,
       },
     });
 
@@ -78,12 +81,11 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(data),
     };
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error("Proxy error:", error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Internal server error' }),
+      body: JSON.stringify({ error: "Internal server error" }),
     };
   }
 };
-

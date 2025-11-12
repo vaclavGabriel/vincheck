@@ -9,7 +9,7 @@ let searchSection, newSearch, errorEl;
 // For Cloudflare Worker: https://your-worker.your-subdomain.workers.dev
 // Leave empty string to use relative path (works with Vercel/Netlify if deployed together)
 const PROXY_API_URL =
-  "https://vincheck-aqwxuwh3t-vaclavs-projects-47bb9be1.vercel.app/api/vehicle";
+  "https://vincheck-5xp3lwugn-vaclavs-projects-47bb9be1.vercel.app/api/vehicle";
 
 // Brand logo mapping - optimized lookup
 const brandLogos = {
