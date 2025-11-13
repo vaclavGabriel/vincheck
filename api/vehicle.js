@@ -7,8 +7,32 @@ const API_KEY = 'ewVQwz_AVddGPGkxlzQJvKVt29-ExG-v';
 const API_BASE_URL = 'https://api.dataovozidlech.cz/api/vehicletechnicaldata/v2';
 
 // Helper function to set CORS headers
-function setCorsHeaders(res) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://vininfo.cz');
+function setCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  // Allow requests from vininfo.cz, localhost (for development), and the Vercel preview URL
+  const allowedOrigins = [
+    'https://vininfo.cz',
+    'https://www.vininfo.cz',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+  ];
+  
+  // Check if origin is allowed
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    // No origin header (same-origin request or server-to-server)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+    // Allow any localhost for development
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    // For production, only allow vininfo.cz
+    res.setHeader('Access-Control-Allow-Origin', 'https://vininfo.cz');
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Max-Age', '86400');
@@ -16,7 +40,7 @@ function setCorsHeaders(res) {
 
 export default async function handler(req, res) {
   // Set CORS headers for all responses
-  setCorsHeaders(res);
+  setCorsHeaders(req, res);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
