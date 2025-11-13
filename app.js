@@ -45,6 +45,64 @@ const brandLogos = {
   VW: "logos/volkswagen.svg",
 };
 
+// Helper function to transform API response to expected format
+function transformApiResponse(apiResponse) {
+  // Check if it's already in the expected array format
+  if (Array.isArray(apiResponse)) {
+    return apiResponse;
+  }
+
+  // Transform from {Status, Data: {...}} format to array format
+  if (apiResponse.Status && apiResponse.Data) {
+    const dataArray = [];
+    const data = apiResponse.Data;
+
+    // Field name to label mapping (Czech labels)
+    const fieldLabels = {
+      VIN: "VIN",
+      TovarniZnacka: "Tovární značka",
+      Typ: "Typ",
+      ObchodniOznaceni: "Obchodní označení",
+      DatumPrvniRegistrace: "Datum první registrace",
+      PravidelnaTechnickaProhlidkaDo: "Pravidelná technická prohlídka do",
+      VozidloDruh: "Druh vozidla",
+      VozidloDruh2: "Druh vozidla 2",
+      Kategorie: "Kategorie",
+      VozidloVyrobce: "Výrobce vozidla",
+      MotorVyrobce: "Výrobce motoru",
+      MotorTyp: "Typ motoru",
+      MotorMaxVykon: "Maximální výkon motoru",
+      Palivo: "Palivo",
+      MotorZdvihObjem: "Objem motoru",
+      VozidloKaroserieBarva: "Barva karoserie",
+      Rozmery: "Rozměry",
+      RozmeryRozvor: "Rozvor",
+      HmotnostiProvozni: "Provozní hmotnost",
+      CisloTp: "Číslo TP",
+      CisloOrv: "Číslo ORV",
+      StatusNazev: "Status",
+      PocetVlastniku: "Počet vlastníků",
+      PocetProvozovatelu: "Počet provozovatelů",
+    };
+
+    // Convert object to array
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== null && value !== undefined && value !== "") {
+        dataArray.push({
+          name: key,
+          value: value,
+          label: fieldLabels[key] || key,
+        });
+      }
+    }
+
+    return dataArray;
+  }
+
+  // If format is unknown, return empty array
+  return [];
+}
+
 // Helper function to get data value by name
 function getDataValue(data, name, defaultValue = "") {
   const item = data.find((item) => item.name === name);
@@ -217,7 +275,14 @@ function getVehicleInfo() {
       }
       return response.json();
     })
-    .then((data) => {
+    .then((responseData) => {
+      // Transform API response to expected format
+      const data = transformApiResponse(responseData);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error("Invalid or empty response from API");
+      }
+
       const vinCode = getDataValue(data, "VIN", "Neznámý VIN");
       const vehicleInfoContainer = document.getElementById("vehicleInfo");
 
