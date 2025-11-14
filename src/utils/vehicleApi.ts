@@ -1,21 +1,10 @@
 import { VehicleData, VehicleDataArray, VehicleDataItem } from '../types'
 
 // Serverless function endpoint
-// Use relative path for same-origin requests (when deployed), or full URL for cross-origin
+// Always use Vercel endpoint since GitHub Pages doesn't support serverless functions
 const getProxyApiUrl = (): string => {
-	if (typeof window === 'undefined') {
-		// Server-side rendering fallback
-		return 'https://vincheck-lk50sdfjl-vaclavs-projects-47bb9be1.vercel.app/api/vehicle'
-	}
-	// If we're on the same domain, use relative path
-	if (
-		window.location.hostname === 'vininfo.cz' ||
-		window.location.hostname === 'www.vininfo.cz'
-	) {
-		return '/api/vehicle'
-	}
-	// For localhost development, use the latest Vercel endpoint
-	// This URL will be updated with each new deployment
+	// Always use the Vercel serverless function endpoint
+	// GitHub Pages is static hosting and doesn't support serverless functions
 	return 'https://vincheck-lk50sdfjl-vaclavs-projects-47bb9be1.vercel.app/api/vehicle'
 }
 
