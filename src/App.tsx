@@ -5,6 +5,7 @@ import HavarijniPojisteniPage from './pages/HavarijniPojisteniPage'
 import HomePage from './pages/HomePage'
 import KompletniHistorieVozuPage from './pages/KompletniHistorieVozuPage'
 import PovinneRuceniPage from './pages/PovinneRuceniPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import VehicleDetailPage from './pages/VehicleDetailPage'
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
 				<Route
 					path="/kompletni-historie-vozu"
 					element={<KompletniHistorieVozuPage />}
+				/>
+				<Route
+					path="/ochrana-osobnich-udaju"
+					element={<PrivacyPolicyPage />}
 				/>
 				<Route path="/vin/:code" element={<VehicleDetailPage type="vin" />} />
 				<Route path="/tp/:code" element={<VehicleDetailPage type="tp" />} />

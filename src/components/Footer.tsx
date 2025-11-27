@@ -14,7 +14,8 @@ const Footer: React.FC = () => {
 					>
 						Datová kostka
 					</a>{' '}
-					| © 2025 by{' '}
+					| <a href="/#/ochrana-osobnich-udaju">Ochrana osobních údajů</a> | © 2025
+					by{' '}
 					<a href="https://fixweb.cz" target="_blank" rel="noopener noreferrer">
 						FixWeb.cz
 					</a>
