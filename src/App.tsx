@@ -1,6 +1,7 @@
 import { Route, HashRouter as Router, Routes } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
+import ScrollToTop from './components/ScrollToTop'
 import HavarijniPojisteniPage from './pages/HavarijniPojisteniPage'
 import HomePage from './pages/HomePage'
 import KompletniHistorieVozuPage from './pages/KompletniHistorieVozuPage'
@@ -11,6 +12,7 @@ import VehicleDetailPage from './pages/VehicleDetailPage'
 function App() {
 	return (
 		<Router>
+			<ScrollToTop />
 			<Routes>
 				<Route path="/" element={<HomePage />} />
 				<Route path="/povinne-ruceni" element={<PovinneRuceniPage />} />
