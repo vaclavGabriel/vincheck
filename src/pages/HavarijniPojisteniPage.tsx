@@ -34,14 +34,13 @@ const HavarijniPojisteniPage: React.FC = () => {
 				<p className="mt-3 mb-4">
 					<strong>Hledáte havarijní pojištění?</strong> Porovnejte nabídky od
 					různých pojišťoven a najděte nejvýhodnější havarijní pojištění pro
-					vaše vozidlo.
+					vaše vozidlo. {' '}
 					<a
 						href="https://online.pojisteni.cz/?ap=AWYPy1"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="fw-bold"
 					>
-						{' '}
 						Srovnat a sjednat havarijní pojištění 🔗
 					</a>
 				</p>

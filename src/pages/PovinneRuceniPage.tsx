@@ -30,14 +30,13 @@ const PovinneRuceniPage: React.FC = () => {
 
 				<p className="mt-3 mb-4">
 					<strong>Hledáte povinné ručení?</strong> Porovnejte nabídky od různých
-					pojišťoven a najděte nejvýhodnější povinné ručení pro vaše vozidlo.
+					pojišťoven a najděte nejvýhodnější povinné ručení pro vaše vozidlo. {' '}
 					<a
 						href="https://online.pojisteni.cz/?ap=AWYPy1"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="fw-bold"
 					>
-						{' '}
 						Srovnat a sjednat povinné ručení 🔗
 					</a>
 				</p>
