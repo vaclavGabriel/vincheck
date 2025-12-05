@@ -33,7 +33,39 @@ const fieldLabels: Record<string, string> = {
 	CisloOrv: 'Číslo ORV',
 	StatusNazev: 'Status',
 	PocetVlastniku: 'Počet vlastníků',
-	PocetProvozovatelu: 'Počet provozovatelů'
+	PocetProvozovatelu: 'Počet provozovatelů',
+	// Additional field labels
+	DatumPrvniRegistraceVCr: 'Datum první registrace v ČR',
+	CisloTypovehoSchvaleni: 'Číslo typového schválení',
+	HomologaceEs: 'Homologace ES',
+	Varianta: 'Varianta',
+	Verze: 'Verze',
+	VozidloElektricke: 'Vozidlo elektrické',
+	VozidloHybridni: 'Vozidlo hybridní',
+	EmiseEHKOSNEHSES: 'Emise EHK/OSNEHSES',
+	EmisniUroven: 'Emisní úroveň',
+	EmiseKSA: 'Emise KSA',
+	EmiseCO2: 'Emise CO₂',
+	SpotrebaMetodika: 'Spotřeba metodika',
+	SpotrebaNa100Km: 'Spotřeba na 100 km',
+	VozidloKaroserieMist: 'Počet míst v karoserii',
+	Rozchod: 'Rozchod',
+	HmotnostiPripPov: 'Hmotnosti přípustné povolené',
+	HmotnostiPripPovN: 'Hmotnosti přípustné povolené nápravy',
+	HmotnostiPripPovBrzdenePV: 'Hmotnosti přípustné povolené brzděné přívěs',
+	HmotnostiPripPovNebrzdenePV: 'Hmotnosti přípustné povolené nebrzděné přívěs',
+	HmotnostiPripPovJS: 'Hmotnosti přípustné povolené jízdní souprava',
+	NapravyPocetDruh: 'Nápravy počet a druh',
+	NapravyPneuRafky: 'Nápravy pneumatiky a ráfky',
+	HlukStojiciOtacky: 'Hluk stojící (otáčky)',
+	HlukJizda: 'Hluk jízda',
+	NejvyssiRychlost: 'Nejvyšší rychlost',
+	DalsiZaznamy: 'Další záznamy',
+	OrvZadrzeno: 'ORV zadrženo',
+	RzDruh: 'Druh registrační značky',
+	RzZadrzena: 'Registrační značka zadržena',
+	ZarazeniVozidla: 'Zařazení vozidla',
+	VozidloAutonomniStupen: 'Autonomní stupeň vozidla'
 }
 
 // Brand logo mapping
@@ -70,6 +102,21 @@ export const brandLogos: Record<string, string> = {
 	VW: 'logos/volkswagen.svg'
 }
 
+// Helper function to format field names to human-readable labels
+function formatFieldName(fieldName: string): string {
+	// If we have a mapping, use it
+	if (fieldLabels[fieldName]) {
+		return fieldLabels[fieldName]
+	}
+	
+	// Otherwise, try to format the field name
+	// Convert camelCase/PascalCase to readable text
+	return fieldName
+		.replace(/([A-Z])/g, ' $1') // Add space before capital letters
+		.replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+		.trim()
+}
+
 // Helper function to transform API response to expected format
 export function transformApiResponse(
 	apiResponse: VehicleData | VehicleDataArray
@@ -86,11 +133,13 @@ export function transformApiResponse(
 
 		// Convert object to array
 		for (const [key, value] of Object.entries(data)) {
+			// Include all values except null, undefined, and empty strings
+			// Note: boolean false should be included
 			if (value !== null && value !== undefined && value !== '') {
 				dataArray.push({
 					name: key,
 					value: value,
-					label: fieldLabels[key] || key
+					label: formatFieldName(key)
 				})
 			}
 		}
@@ -117,11 +166,47 @@ export function getLogoSrc(brand: string): string {
 	return brandLogos[brand] || 'logos/default_logo.svg'
 }
 
+// Helper function to format ISO date string to Czech format (d.m.yyyy)
+function formatDate(dateString: string): string | null {
+	// Try to parse ISO date format (e.g., "2026-01-02T00:00:00" or "2026-01-02")
+	const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})(T.*)?$/
+	const match = dateString.match(isoDateRegex)
+	
+	if (match) {
+		const year = match[1]
+		const month = parseInt(match[2], 10)
+		const day = parseInt(match[3], 10)
+		return `${day}. ${month}. ${year}`
+	}
+	
+	return null
+}
+
 // Sanitize and format string value for display
-export function formatValue(value: string | number): string {
+export function formatValue(value: string | number | boolean): string {
+	// Convert boolean values to Czech
+	if (typeof value === 'boolean') {
+		return value ? 'Ano' : 'Ne'
+	}
+	
 	if (typeof value !== 'string') {
 		value = String(value)
 	}
+	
+	// Convert string "true"/"false" to Czech
+	if (value.toLowerCase() === 'true') {
+		return 'Ano'
+	}
+	if (value.toLowerCase() === 'false') {
+		return 'Ne'
+	}
+	
+	// Format ISO date strings to Czech format (d.m.yyyy)
+	const formattedDate = formatDate(value)
+	if (formattedDate) {
+		return formattedDate
+	}
+	
 	return value.replace(/\n/g, '<br>')
 }
 
